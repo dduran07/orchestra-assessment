@@ -719,4 +719,29 @@ h1,h2,h3,h4,h5,h6 {
   .product-thumbnail-slider {
     height: 740px;
   }
+
+}
+
+/* Vertical separation for the mailto link */
+.mailto-link {
+    display: inline-block;
+    margin-top: 15px;
+    color: #ffc43f; /* Matches the FoodMart yellow highlight */
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.mailto-link:hover {
+    color: #222; /* Darker hover state for better UX */
+    text-decoration: underline;
+}
+
+/* Optional: Add a small label above the link */
+.mailto-link::before {
+    content: "OR";
+    display: block;
+    font-size: 0.7rem;
+    color: #999;
+    margin-bottom: 5px;
+    letter-spacing: 1px;
 }
