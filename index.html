@@ -2531,6 +2531,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <script>
   //Master hardcore events
       <script>
+// Target both Desktop and Mobile search forms
+document.querySelectorAll('form[role="search"], #search-form').forEach(searchForm => {
+    searchForm.addEventListener('submit', function(e) {
+        const query = this.querySelector('input').value;
+        
+        window.dataLayer.push({
+            'event': 'search',
+            'search_term': query,
+            'search_location': window.innerWidth > 991 ? 'desktop_header' : 'mobile_menu'
+        });
+    });
+});
 document.addEventListener('DOMContentLoaded', function() {
     // 1. view_item (Fires on Page Load for the featured product)
     window.dataLayer.push({
