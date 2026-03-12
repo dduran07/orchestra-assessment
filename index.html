@@ -19,6 +19,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&family=Open+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+  
+    <script>
+      window.dataLayer = window.dataLayer || [];
+  </script>
+    
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -2521,10 +2526,46 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <script src="js/plugins.js"></script>
     <script src="js/script.js"></script>
     <script>
-  // Ensuring the script runs after the DOM is fully interactive
-  document.addEventListener('DOMContentLoaded', function() {
-    
-    // 1. Hardcoded add_to_cart (Developer Side)
+  //Master hardcore events
+      <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 1. view_item (Fires on Page Load for the featured product)
+    window.dataLayer.push({
+        'event': 'view_item',
+        'ecommerce': {
+            'currency': 'USD',
+            'value': 24.00,
+            'items': [{
+                'item_id': 'prod-001',
+                'item_name': 'Sun-Ripened Bananas',
+                'price': 24.00,
+                'item_category': 'Fruits',
+                'item_list_name': 'Homepage Featured'
+            }]
+        }
+    });
+
+    // 2. select_item (Fires when clicking a product title)
+    document.querySelectorAll('.product-item h3').forEach(title => {
+        title.addEventListener('click', function() {
+            const productCard = this.closest('.product-item');
+            const productName = this.innerText;
+            const productPrice = productCard.querySelector('.price') ? productCard.querySelector('.price').innerText : '0';
+
+            window.dataLayer.push({
+                'event': 'select_item',
+                'ecommerce': {
+                    'item_list_name': 'Homepage List',
+                    'items': [{
+                        'item_name': productName,
+                        'price': parseFloat(productPrice.replace('$', ''))
+                    }]
+                }
+            });
+        });
+    });
+
+    // 3. add_to_cart (Fires when clicking the "Add to Cart" icon/link)
     document.querySelectorAll('.product-item .nav-link').forEach(button => {
         button.addEventListener('click', function(e) {
             const productCard = this.closest('.product-item');
@@ -2538,15 +2579,35 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     'value': parseFloat(productPrice.replace('$', '')),
                     'items': [{
                         'item_name': productName,
-                        'price': parseFloat(productPrice.replace('$', ''))
+                        'price': parseFloat(productPrice.replace('$', '')),
+                        'quantity': 1
                     }]
                 }
             });
-            console.log('DataLayer Push: add_to_cart'); // Helpful for your QA!
         });
     });
 
-    // 2. Hardcoded newsletter_signup (Lead Gen Focus)
+    // 4. begin_checkout (Fires when clicking "Continue to checkout")
+    // Note: Targeted specifically for the button text as requested
+    document.addEventListener('click', function(e) {
+        if (e.target && (e.target.innerText === 'Continue to checkout' || e.target.classList.contains('checkout-button'))) {
+            window.dataLayer.push({
+                'event': 'begin_checkout',
+                'ecommerce': {
+                    'currency': 'USD',
+                    'value': 48.00, // Simulated total
+                    'items': [
+                        { 'item_name': 'Sun-Ripened Bananas', 'price': 24.00, 'quantity': 1 },
+                        { 'item_name': 'Organic Ketchup', 'price': 24.00, 'quantity': 1 }
+                    ]
+                }
+            });
+        }
+    });
+});
+</script>
+
+    // Hardcoded newsletter_signup (Lead Gen Focus)
     const newsletterForm = document.querySelector('form[role="newsletter"]');
     if (newsletterForm) {
         newsletterForm.addEventListener('submit', function(e) {
@@ -2562,3 +2623,4 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </body>
 
 </html>
+
