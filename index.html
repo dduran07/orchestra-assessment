@@ -2528,43 +2528,48 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <script src="js/plugins.js"></script>
     <script src="js/script.js"></script>
     <script>
-      // Option B: Dynamic view_item using Intersection Observer
-const productObserver = new IntersectionObserver((entries, observer) => {
+      // 1. Create the Observer for the Product Block (The Container)
+const listObserver = new IntersectionObserver((entries, observer) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
-            const productCard = entry.target;
+            const container = entry.target;
+            const items = [];
             
-            // Scrape data directly from the HTML elements in your screenshot
-            const pName = productCard.querySelector('h3')?.innerText || 'Unknown Product';
-            const pPriceText = productCard.querySelector('.price')?.innerText || '$0';
-            const pPriceValue = parseFloat(pPriceText.replace('$', '')) || 0;
+            // 2. Find all product names within this specific block
+            container.querySelectorAll('.product-item').forEach((product, index) => {
+                const pName = product.querySelector('h3')?.innerText || 'Unknown';
+                const pPrice = parseFloat(product.querySelector('.price')?.innerText.replace('$', '')) || 0;
+                
+                // Add to our array
+                items.push({
+                    'item_name': pName,
+                    'price': pPrice,
+                    'index': index + 1 // Tracks position in the list
+                });
+            });
 
+            // 3. Push ONE event with the full list of names
             window.dataLayer.push({
-                'event': 'view_item',
+                'event': 'view_item_list',
                 'ecommerce': {
-                    'currency': 'USD',
-                    'value': pPriceValue,
-                    'items': [{
-                        'item_name': pName,
-                        'price': pPriceValue,
-                        'item_category': 'Fruits', // You can refine this logic if needed
-                        'quantity': 1
-                    }]
+                    'item_list_name': 'Homepage Product Grid',
+                    'items': items
                 }
             });
 
-            console.log('👀 Product Viewed (Dynamic):', pName);
+            console.log('✅ Success: view_item_list pushed with ' + items.length + ' products.');
             
-            // Stop observing after the event fires once to avoid duplicate hits
-            observer.unobserve(productCard);
+            // Stop observing the container so it doesn't fire again on every scroll
+            observer.unobserve(container);
         }
     });
-}, { threshold: 0.5 }); // Fires when 50% of the product is visible
+}, { threshold: 0.2 }); // Fires when 20% of the grid is visible
 
-// Attach the observer to every product item found in your screenshot
-document.querySelectorAll('.product-item').forEach(item => {
-    productObserver.observe(item);
-});
+// 4. Target the parent row/container (Check your HTML for the correct ID or class)
+const productGrid = document.querySelector('.product-grid') || document.querySelector('#nav-all .row');
+if (productGrid) {
+    listObserver.observe(productGrid);
+}
       
 // Optimized Add to Cart for FoodMart Template
 document.querySelectorAll('a.nav-link').forEach(button => {
@@ -2630,6 +2635,7 @@ if (newsletterForm) {
   </body>
 
 </html>
+
 
 
 
