@@ -2573,15 +2573,19 @@ if (productGrid) {
 
 // Optimized select_item (Product Click)
 document.querySelectorAll('.product-item').forEach(productCard => {
-    // We target the image link and the title for the best coverage
     const clickableElements = productCard.querySelectorAll('figure a, h3');
     
     clickableElements.forEach(el => {
-        el.style.cursor = 'pointer'; // Visual cue for the user
+        el.style.cursor = 'pointer';
         el.addEventListener('click', function() {
             const pName = productCard.querySelector('h3')?.innerText || 'Unknown';
             const pPrice = parseFloat(productCard.querySelector('.price')?.innerText.replace('$', '')) || 0;
 
+            // We push the event and OVERWRITE the items array with only ONE product
+            window.dataLayer.push({
+                'ecommerce': null // Clear the previous ecommerce object first
+            });
+            
             window.dataLayer.push({
                 'event': 'select_item',
                 'ecommerce': {
@@ -2589,12 +2593,12 @@ document.querySelectorAll('.product-item').forEach(productCard => {
                     'items': [{
                         'item_name': pName,
                         'price': pPrice,
-                        'item_list_name': 'Homepage Product Grid'
+                        'index': 1 // It's now the only item in this event
                     }]
                 }
             });
 
-            console.log('🎯 Product Selected:', pName);
+            console.log('🎯 select_item pushed with ONLY:', pName);
         });
     });
 });
@@ -2663,6 +2667,7 @@ if (newsletterForm) {
   </body>
 
 </html>
+
 
 
 
