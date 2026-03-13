@@ -2637,6 +2637,52 @@ document.querySelectorAll('a.nav-link').forEach(button => {
         });
     }
 });
+      
+// Optimized begin_checkout (Cart to Checkout transition)
+document.addEventListener('click', function(e) {
+    // 1. Target the specific "Continue to checkout" button
+    if (e.target && e.target.innerText.includes('Continue to checkout')) {
+        
+        const cartItems = [];
+        let totalValue = 0;
+
+        // 2. Find the cart list (using the classes from your screenshot)
+        const cartList = document.querySelector('.offcanvas-body .list-group');
+        
+        if (cartList) {
+            cartList.querySelectorAll('.list-group-item').forEach(item => {
+                const pName = item.querySelector('h6')?.innerText;
+                const pPriceText = item.querySelector('span.text-body-secondary')?.innerText;
+                
+                // Only add if it's a product (not the "Total" row)
+                if (pName && pPriceText) {
+                    const pPrice = parseFloat(pPriceText.replace('$', '')) || 0;
+                    cartItems.push({
+                        'item_name': pName,
+                        'price': pPrice,
+                        'quantity': 1
+                    });
+                    totalValue += pPrice;
+                }
+            });
+        }
+
+        // 3. Flush previous ecommerce data
+        window.dataLayer.push({ 'ecommerce': null });
+
+        // 4. Push the checkout event
+        window.dataLayer.push({
+            'event': 'begin_checkout',
+            'ecommerce': {
+                'currency': 'USD',
+                'value': totalValue,
+                'items': cartItems
+            }
+        });
+
+        console.log('🚀 begin_checkout pushed with ' + cartItems.length + ' items. Total: $' + totalValue);
+    }
+});
     </script>
 
     <script>
@@ -2667,6 +2713,7 @@ if (newsletterForm) {
   </body>
 
 </html>
+
 
 
 
