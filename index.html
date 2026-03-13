@@ -2499,6 +2499,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               <p>Subscribe to our newsletter to get updates about our grand offers.</p>
               <form class="d-flex mt-3 gap-0" role="newsletter">
                 <input class="form-control rounded-start rounded-0 bg-light" type="email" placeholder="Email Address" aria-label="Email Address">
+               <div style="display:none !important;">
+              <label>Leave this field blank</label>
+                <input type="text" name="honeypot_field" id="honeypot_field" tabindex="-1" autocomplete="off">
+              </div>
                 <button class="btn btn-dark rounded-end rounded-0" type="submit">Subscribe</button>
               </form>
             </div>
@@ -2713,6 +2717,7 @@ if (newsletterForm) {
   </body>
 
 </html>
+
 
 
 
