@@ -2528,85 +2528,41 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <script src="js/plugins.js"></script>
     <script src="js/script.js"></script>
     <script>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('Orchestra Tracking: DOM Fully Loaded');
-
-    // 1. VIEW_ITEM (Fires on Page Load)
-    window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push({
-        'event': 'view_item',
-        'ecommerce': {
-            'currency': 'USD',
-            'value': 24.00,
-            'items': [{
-                'item_id': 'prod-001',
-                'item_name': 'Sun-Ripened Bananas',
-                'price': 24.00,
-                'item_category': 'Fruits'
-            }]
-        }
-    });
-    console.log('DataLayer Push: view_item');
-
-    // 2. SELECT_ITEM (Click on Product Title)
-    // Targeting common FoodMart classes: 'product-item' and 'h3'
-    document.querySelectorAll('.product-item h3, .product-item .product-title').forEach(item => {
-        item.addEventListener('click', function() {
-            window.dataLayer.push({
-                'event': 'select_item',
-                'ecommerce': {
-                    'item_list_name': 'Homepage Featured',
-                    'items': [{ 'item_name': this.innerText }]
-                }
-            });
-            console.log('DataLayer Push: select_item ->', this.innerText);
-        });
-    });
-
-    // 3. ADD_TO_CART (The Button Click)
-    // Targeting the link inside the product item that acts as a button
-    document.querySelectorAll('.product-item a.nav-link, .product-item .btn-cart').forEach(button => {
+// Optimized Add to Cart for FoodMart Template
+document.querySelectorAll('a.nav-link').forEach(button => {
+    // Only target the links that contain the text "Add to Cart"
+    if (button.innerText.includes('Add to Cart')) {
         button.addEventListener('click', function(e) {
+            e.preventDefault(); // Prevents the page from jumping since href="#"
+            
+            // 1. Find the product data from the surrounding card
             const productCard = this.closest('.product-item');
-            const pName = productCard.querySelector('h3').innerText;
-            const pPrice = productCard.querySelector('.price').innerText;
-
+            
+            // 2. Safely grab the Name and Price
+            // We use optional chaining (?.) and default values in case the HTML changes
+            const productName = productCard?.querySelector('h3')?.innerText || 'Unknown Product';
+            const priceText = productCard?.querySelector('.price')?.innerText || '$0';
+            const priceValue = parseFloat(priceText.replace('$', '')) || 0;
+        
+            // 3. Push to DataLayer
             window.dataLayer.push({
                 'event': 'add_to_cart',
                 'ecommerce': {
                     'currency': 'USD',
-                    'value': parseFloat(pPrice.replace('$', '')),
+                    'value': priceValue,
                     'items': [{
-                        'item_name': pName,
-                        'price': parseFloat(pPrice.replace('$', '')),
+                        'item_name': productName,
+                        'price': priceValue,
                         'quantity': 1
                     }]
                 }
             });
-            console.log('DataLayer Push: add_to_cart ->', pName);
-        });
-    });
 
-    // 4. BEGIN_CHECKOUT (The specific button text Jeff requested)
-    document.addEventListener('click', function(e) {
-        if (e.target && (e.target.innerText === 'Continue to checkout' || e.target.textContent.includes('Continue to checkout'))) {
-            window.dataLayer.push({
-                'event': 'begin_checkout',
-                'ecommerce': {
-                    'currency': 'USD',
-                    'value': 48.00,
-                    'items': [
-                        { 'item_name': 'Sun-Ripened Bananas', 'price': 24.00, 'quantity': 1 },
-                        { 'item_name': 'Organic Ketchup', 'price': 24.00, 'quantity': 1 }
-                    ]
-                }
-            });
-            console.log('DataLayer Push: begin_checkout');
-        }
-    });
+            console.log('✅ Success: add_to_cart pushed for:', productName);
+        });
+    }
 });
-</script>
+    </script>
 
     <script>
 // Helper function to create SHA-256 hash
@@ -2636,6 +2592,7 @@ if (newsletterForm) {
   </body>
 
 </html>
+
 
 
 
