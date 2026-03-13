@@ -2528,6 +2528,44 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <script src="js/plugins.js"></script>
     <script src="js/script.js"></script>
     <script>
+      // Option B: Dynamic view_item using Intersection Observer
+const productObserver = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            const productCard = entry.target;
+            
+            // Scrape data directly from the HTML elements in your screenshot
+            const pName = productCard.querySelector('h3')?.innerText || 'Unknown Product';
+            const pPriceText = productCard.querySelector('.price')?.innerText || '$0';
+            const pPriceValue = parseFloat(pPriceText.replace('$', '')) || 0;
+
+            window.dataLayer.push({
+                'event': 'view_item',
+                'ecommerce': {
+                    'currency': 'USD',
+                    'value': pPriceValue,
+                    'items': [{
+                        'item_name': pName,
+                        'price': pPriceValue,
+                        'item_category': 'Fruits', // You can refine this logic if needed
+                        'quantity': 1
+                    }]
+                }
+            });
+
+            console.log('👀 Product Viewed (Dynamic):', pName);
+            
+            // Stop observing after the event fires once to avoid duplicate hits
+            observer.unobserve(productCard);
+        }
+    });
+}, { threshold: 0.5 }); // Fires when 50% of the product is visible
+
+// Attach the observer to every product item found in your screenshot
+document.querySelectorAll('.product-item').forEach(item => {
+    productObserver.observe(item);
+});
+      
 // Optimized Add to Cart for FoodMart Template
 document.querySelectorAll('a.nav-link').forEach(button => {
     // Only target the links that contain the text "Add to Cart"
@@ -2592,6 +2630,7 @@ if (newsletterForm) {
   </body>
 
 </html>
+
 
 
 
