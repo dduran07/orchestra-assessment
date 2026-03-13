@@ -2690,28 +2690,25 @@ document.addEventListener('click', function(e) {
     </script>
 
     <script>
-// Helper function to create SHA-256 hash
-async function sha256(message) {
-    const msgBuffer = new TextEncoder().encode(message.trim().toLowerCase());
+// Function to create a SHA-256 hash
+async function hashEmail(email) {
+    const msgBuffer = new TextEncoder().encode(email.trim().toLowerCase());
     const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
-// Newsletter Listener
-const newsletterForm = document.querySelector('form[role="newsletter"]');
-if (newsletterForm) {
-    newsletterForm.addEventListener('submit', async function(e) {
-        const emailInput = this.querySelector('input[type="email"]').value;
-        const hashedEmail = await sha256(emailInput); // PII Prevention applied here
+// Newsletter Form Listener
+document.querySelector('#newsletter-form').addEventListener('submit', async function(e) {
+    const emailValue = this.querySelector('input[type="email"]').value;
+    const hashedId = await hashEmail(emailValue);
 
-        window.dataLayer.push({
-            'event': 'newsletter_signup',
-            'user_id': hashedEmail, // Hashed User ID
-            'form_location': 'footer'
-        });
+    window.dataLayer.push({
+        'event': 'newsletter_signup',
+        'form_location': 'footer',
+        'user_id': hashedId // This is what shows up in your screenshot!
     });
-}
+});
   </script>
     
   </body>
